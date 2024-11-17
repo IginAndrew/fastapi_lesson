@@ -2,7 +2,7 @@ import sqlite3
 
 def get_connection():
     try:
-        con = sqlite3.connect('journal.db')
+        con = sqlite3.connect('db/journal.db')
         con.row_factory = sqlite3.Row
         print("Успешное подключение!")
         return con
@@ -108,6 +108,48 @@ def journals_insert(diary,dates_id,users_id):
             con.close()
             print('Соединение с sql закрыто')
 
+def users_select_all():
+    try:
+        con = get_connection()
+        with con:
+            c=con.cursor()
+        res = c.execute('''
+        SELECT * FROM Users
+        ''')
+        res = res.fetchall()
+        if not res:
+            print('No users')
+            return False
+        return res
+    except sqlite3.Error as error:
+        print('Error with SQLite in users_select_all',error)
+    finally:
+        if con:
+            con.close()
+            print('Connection closed')
+
+def users_select(login):
+    try:
+        con = get_connection()
+        with con:
+            c=con.cursor()
+        res = c.execute('''
+        SELECT * FROM Users
+        WHERE login = ?;
+        ''',(login,))
+        res = res.fetchall()
+        if not res:
+            print('No users')
+            return False
+        return res
+    except sqlite3.Error as error:
+        print('Error with SQLite in users_select',error)
+    finally:
+        if con:
+            con.close()
+            print('Connection closed')
+
+
 
 if __name__ == '__main__':
     users()
@@ -116,4 +158,7 @@ if __name__ == '__main__':
     # users_insert('Andrew', '1234')
     # dates_insert('2024-03-01')
     # journals_insert('test3', 3, 1)
+    # u = (users_select('Andrew'))
+    # print(u[0]['psw'])
+    print([i for name in users_select_all() for i in name])
 
