@@ -6,5 +6,5 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/")
 def all_users():
-    r = [i for name in users_select_all() for i in name]
+    r = users_select_all()
     return {"status_code": status.HTTP_201_CREATED, "transaction": r}

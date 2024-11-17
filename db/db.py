@@ -160,5 +160,5 @@ if __name__ == '__main__':
     # journals_insert('test3', 3, 1)
     # u = (users_select('Andrew'))
     # print(u[0]['psw'])
-    print([i for name in users_select_all() for i in name])
+    # print([i for name in users_select_all() for i in name])
 
