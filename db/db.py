@@ -208,6 +208,29 @@ def users_update(login, New_login, psw):
             print("Соединение с sql закрыто")
 
 
+def date_select_all():
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        res = c.execute(
+            """
+        SELECT * FROM Dates
+        """
+        )
+        res = res.fetchall()
+        if not res:
+            print("No dates")
+            return False
+        return res
+    except sqlite3.Error as error:
+        print("Error with SQLite in date_select_all", error)
+    finally:
+        if con:
+            con.close()
+            print("Connection closed")
+
+
 if __name__ == "__main__":
     users()
     dates()
