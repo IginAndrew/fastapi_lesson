@@ -12,3 +12,5 @@ class CreateDates(BaseModel):
 
 class CreateJournals(BaseModel):
     diary: str
+    dates_id: int
+    users_id: int
