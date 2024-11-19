@@ -3,35 +3,27 @@ from requests_oauth2client  import BearerAuth
 from pprint import pprint
 
 
-
-class ClassAuth:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-    def tokken(self):
-        post_params = {'username': self.username, 'password': self.password}
-        response = requests.post('http://127.0.0.1:8000/auth/token', data=post_params)
-        self.dict_res = response.json()['access_token']
-        return self.dict_res
-
-    def user_date(self):
-        url = "http://127.0.0.1:8000/auth/read_current_user"
-        response = requests.get(url, auth=BearerAuth(ClassAuth.tokken(self)))
-        dict_res = response.json()
-        return dict_res
+def tokken(username, password):
+    post_params = {'username': username, 'password': password}
+    response = requests.post('http://127.0.0.1:8000/auth/token', data=post_params)
+    dict_res = response.json()['access_token']
+    return dict_res
+def user_date(username, password):
+    url = "http://127.0.0.1:8000/auth/read_current_user"
+    response = requests.get(url, auth=BearerAuth(tokken(username, password)))
+    dict_res = response.json()
+    return dict_res
 
 
-class ClassGet:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+def all_users(username, password):
+    res = requests.get("http://127.0.0.1:8000/users/all", auth=BearerAuth(tokken(username, password)))
+    dict_res = res.json()
+    return dict_res
 
-    def all_users(self):
-        user = ClassAuth(self.username, self.password)
-        res = requests.get("http://127.0.0.1:8000/users/all", auth=BearerAuth(user.tokken()))
-        self.dict_res = res.json()
-        return self.dict_res
+def one_users(login, username, password):
+    res = requests.get(f"http://127.0.0.1:8000/users/detail/{login}", auth=BearerAuth(tokken(username, password)))
+    dict_res = res.json()
+    return dict_res
 
     # def all_products(self):
     #     res = requests.get("https://lesson-pk.ru/products/")
@@ -174,10 +166,9 @@ class ClassGet:
 
 
 if __name__ == "__main__":
-    # user = ClassAuth('Admin', '1234')
-    # print(user.user_date())
-    get = ClassGet('Admin', '1234')
-    pprint(get.all_users())
+    # user_date('Admin', '1234')#получить\обновить токен
+    # pprint(all_users('Admin', '1234'))
+    # pprint(one_users('Admin', 'Admin', '1234'))
     # pprint(get.all_products_categories('Apple'))
     # pprint(get.products_detail('i phon'))
     # pprint(get.all_products())

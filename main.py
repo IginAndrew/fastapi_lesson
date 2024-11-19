@@ -35,6 +35,5 @@ app.include_router(user.router)
 app.include_router(dates.router)
 app.include_router(journals.router)
 app.include_router(auth.router)
-#
 
 """uvicorn main:app --reload"""
