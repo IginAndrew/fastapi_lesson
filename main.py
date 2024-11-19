@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from routers import user, dates, journals
+from routers import user, dates, journals, auth
 
 from loguru import logger
 from uuid import uuid4
@@ -34,7 +34,7 @@ async def welcome() -> dict:
 app.include_router(user.router)
 app.include_router(dates.router)
 app.include_router(journals.router)
-# app.include_router(auth.router)
+app.include_router(auth.router)
 
 
 """uvicorn main:app --reload"""
