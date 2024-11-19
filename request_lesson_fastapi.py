@@ -25,6 +25,18 @@ def one_users(login, username, password):
     dict_res = res.json()
     return dict_res
 
+def add_user(login, psw):
+    url = "http://127.0.0.1:8000/auth/"
+    post_params = {'login': login, 'psw': psw}
+    response = requests.post(url, json=post_params, )
+    dict_res = response.json()
+    return dict_res
+
+def del_users(login, username, password):
+    res = requests.delete(f"http://127.0.0.1:8000/users/delete/{login}", auth=BearerAuth(tokken(username, password)))
+    dict_res = res.json()
+    return dict_res
+
     # def all_products(self):
     #     res = requests.get("https://lesson-pk.ru/products/")
     #     dict_res = res.json()
@@ -167,22 +179,8 @@ def one_users(login, username, password):
 
 if __name__ == "__main__":
     # user_date('Admin', '1234')#получить\обновить токен
+    # pprint(add_user('login', 'psw'))
     # pprint(all_users('Admin', '1234'))
     # pprint(one_users('Admin', 'Admin', '1234'))
-    # pprint(get.all_products_categories('Apple'))
-    # pprint(get.products_detail('i phon'))
-    # pprint(get.all_products())
-    # post = ClassPost('Andrew', '12048937')
-    # print(post.add_categories('SAMSUNG'))
-    # print(post.add_products(name = 'BOX', category=5))
-    # print(post.add_user('Sergey', 'Petrov', 'serper', 'serper@ya.ru', '1234'))
-    # p = ClassPut('Andrew', '12048937')
-    # print(p.put_categories('!SAMSUNG!', 'SAMSUNG'))
-    # print(p.put_products(name='BOX', new_name='!BOX!', category=5))
-    # d = ClassDelete('Andrew', '12048937')
-    # print(d.delete_categories('GOLDMEN'))
-    # pprint(d.delete_products('mac book'))
-    # pprint(d.delete_user(4))
-    # p = ClassPath('Andrew', '12048937')
-    # pprint(p.path_uswers(2))
+    # pprint(del_users('login', 'Admin', '1234'))
     pass
