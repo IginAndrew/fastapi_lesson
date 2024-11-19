@@ -54,7 +54,7 @@ def create_access_token(
     expires_delta: timedelta,
 ):
     encode = {
-        "sub": username,
+        "login": username,
         "id": user_id,
     }
     expires = datetime.now() + expires_delta
@@ -82,7 +82,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 def get_current_user(token: str = Depends(oauth2_scheme)):#которая декодирует наш JWT токен,
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        username: str = payload.get("login")
         user_id: int = payload.get("id")
         expire = payload.get("exp")
         if username is None or user_id is None:

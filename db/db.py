@@ -254,6 +254,50 @@ def journal_select_all():
             print("Connection closed")
 
 
+def users_del(login):
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        c.execute(
+            """
+                  DELETE FROM Users
+                  WHERE login = ?;
+                  """,
+            (
+                login,
+            ),
+        )
+        con.commit()
+    except sqlite3.Error as error:
+        print("Ошибка при работе sql", error)
+    finally:
+        if con:
+            con.close()
+            print("Соединение с sql закрыто")
+
+def journal_del_user(login):
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        c.execute(
+            """
+                  DELETE FROM Journals
+                  WHERE users_id = (SELECT id FROM Users WHERE login = ?);
+                  """,
+            (
+                login,
+            ),
+        )
+        con.commit()
+    except sqlite3.Error as error:
+        print("Ошибка при работе sql", error)
+    finally:
+        if con:
+            con.close()
+            print("Соединение с sql закрыто")
+
 if __name__ == "__main__":
     users()
     dates()
@@ -265,3 +309,4 @@ if __name__ == "__main__":
     # print(u[0]['psw'])
     # print([i for name in users_select_all() for i in name])
     # users_update("string", "Sveta", "1234")
+    users_del('string')
