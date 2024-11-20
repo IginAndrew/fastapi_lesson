@@ -20,15 +20,6 @@ async def all_users(get_user: dict = Depends(get_current_user)):
         )
 
 
-# @router.post("/create")
-# async def create_user(create_users: CreateUsers):
-#     users_insert(
-#         login=create_users.login,
-#         psw=create_users.psw,
-#     )
-#     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
-
-
 @router.get("/detail/{login}")
 async def user_detail(login: str, get_user: dict = Depends(get_current_user)):
     res = users_select_all()
