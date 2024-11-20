@@ -195,7 +195,7 @@ def del_users(login, username, password):
 
 if __name__ == "__main__":
     # user_date("Admin", "1234")  # получить\обновить токен
-    # pprint(add_user("Admin", "1234"))
+    pprint(add_user("Andrew", "1234"))
     # pprint(one_users('Admin', 'Admin', '1234'))
     # pprint(del_users("Andrew", "Admin", "1234"))
     pprint(all_users("Admin", "1234"))
