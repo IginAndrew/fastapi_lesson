@@ -1,6 +1,7 @@
 import requests
 from requests_oauth2client import BearerAuth
 from pprint import pprint
+from datetime import date
 
 
 def tokken(username, password):
@@ -54,10 +55,19 @@ def del_users(login, username, password):
     return dict_res
 
 
-def add_journal(diary: str, dates_id: int, users_id: int, username, password):
+def add_journal(diary: str, username, password):
+    today = date.today()
     auth = BearerAuth(tokken(username, password))
+    add_date(str(today))
+    id_user = user_date(username, password)["User"]["id"]
+    id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == str(today)]
+    print(id_date)
     url = "http://127.0.0.1:8000/journals/create/"
-    post_params = {"diary": diary, "dates_id": dates_id, "users_id": users_id}
+    post_params = {
+        "diary": diary,
+        "dates_id": int(id_date[0]),
+        "users_id": int(id_user),
+    }
     response = requests.post(
         url,
         json=post_params,
@@ -65,57 +75,45 @@ def add_journal(diary: str, dates_id: int, users_id: int, username, password):
     )
     dict_res = response.json()
     return dict_res
-    # def all_products(self):
-    #     res = requests.get("https://lesson-pk.ru/products/")
-    #     dict_res = res.json()
-    #     self.x = (dict_res['transaction'])
-    #     return self.x
-
-    # def all_products_categories(self, category):
-    #     url = f"https://lesson-pk.ru/products/{category}"
-    #     res = requests.get(url)
-    #     dict_res = res.json()
-    #     self.x = (dict_res['transaction'])
-    #     return self.x
-
-    # def products_detail(self, name):
-    #     url = f"https://lesson-pk.ru/products/detail/{name}"
-    #     res = requests.get(url)
-    #     dict_res = res.json()
-    #     self.x = (dict_res['transaction'])
-    #     return self.x
 
 
-# class ClassPost:
-#     def __init__(self, username, password):
-#         self.username = username
-#         self.password = password
+def add_date(date_new: str):
+    today = date.today()
+    url = "http://127.0.0.1:8000/dates/create/"
+    if date_new != str(today) and date_new not in [
+        i["date"] for i in all_date()["transaction"]
+    ]:
+        post_params = {"date": date_new}
+        response = requests.post(
+            url,
+            json=post_params,
+        )
+        dict_res = response.json()
+        return dict_res
+    else:
+        if str(today) not in [i["date"] for i in all_date()["transaction"]]:
+            post_params = {"date": str(today)}
+            response = requests.post(
+                url,
+                json=post_params,
+            )
+            dict_res = response.json()
+            return dict_res
 
-#     def add_categories(self, name):
-#         user = ClassAuth(self.username, self.password)
-#         url = 'https://lesson-pk.ru/category/create'
-#         post_params = {'name': name}
-#         response = requests.post(url, json=post_params, )
-#         self.dict_res = response.json()
-#         return self.dict_res
 
-#     def add_products(self, name, category=0, description='!!!!', price=0, stock=0, rating=0):
-#         self.name = name
-#         user = ClassAuth(self.username, self.password)
-#         url = 'https://lesson-pk.ru/products/create'
-#         post_params = {'name': self.name, 'description': description, 'price': price,
-#                        'image_url': f'img/{slugify(self.name)}', 'stock': stock, 'category': category, 'rating': rating}
-#         response = requests.post(url, json=post_params, auth=BearerAuth(user.tokken()))
-#         self.dict_res = response.json()
-#         return self.dict_res
+def all_date():
+    url = "http://127.0.0.1:8000/dates/all/"
+    response = requests.get(
+        url,
+    )
+    dict_res = response.json()
+    return dict_res
 
-#     def add_user(self, first_name, last_name, username, email, password):
-#         url = 'https://lesson-pk.ru/auth/'
-#         post_params = {'first_name': first_name, 'last_name': last_name,
-#                        'username': username, 'email': email, 'password': password}
-#         response = requests.post(url, json=post_params)
-#         self.dict_res = response.json()
-#         return self.dict_res
+
+# def auto_add_date():
+#     today = date.today()
+#     if str(today) not in [i["date"] for i in all_date()["transaction"]]:
+#         add_date(str(today))
 
 
 # class ClassPut:
@@ -137,60 +135,6 @@ def add_journal(diary: str, dates_id: int, users_id: int, username, password):
 #                 return self.dict_res
 #         return {}
 
-#     def put_products(self, name, new_name, category=0, description='!!!!', price=0, stock=0, rating=0):
-#         user = ClassAuth(self.username, self.password)
-#         get = ClassGet()
-#         dict_products = (get.all_products())
-#         for i, v in enumerate(dict_products):
-#             if slugify(name) == v['slug']:
-#                 url = f'https://lesson-pk.ru/products/detail/{slugify(name)}'
-#                 post_params = {'name': new_name, 'description': description, 'price': price,
-#                                'image_url': f'img/{slugify(name)}', 'stock': stock, 'category': category,
-#                                'rating': rating}
-#                 response = requests.put(url, json=post_params, auth=BearerAuth(user.tokken()))
-#                 self.dict_res = response.json()
-#                 return self.dict_res
-#         return {}
-
-
-# class ClassDelete:
-#     def __init__(self, username, password):
-#         self.username = username
-#         self.password = password
-
-#     def delete_categories(self, name):
-#         user = ClassAuth(self.username, self.password)
-#         get = ClassGet()
-#         dict_categories = (get.all_categories()['transaction'])
-#         for i, v in enumerate(dict_categories):
-#             if slugify(name) == v['slug']:
-#                 id = dict_categories[i]['id']
-#                 url = f'https://lesson-pk.ru/category/delete?id={id}'
-#                 response = requests.delete(url, auth=BearerAuth(user.tokken()))
-#                 self.dict_res = response.json()
-#                 return self.dict_res
-#         return {}
-
-#     def delete_products(self, name):
-#         user = ClassAuth(self.username, self.password)
-#         get = ClassGet()
-#         dict_products = (get.all_products())
-#         for i, v in enumerate(dict_products):
-#             if slugify(name) == v['slug']:
-#                 id = dict_products[i]['id']
-#                 url = f'https://lesson-pk.ru/products/delete?id={id}'
-#                 response = requests.delete(url, auth=BearerAuth(user.tokken()))
-#                 self.dict_res = response.json()
-#                 return self.dict_res
-#         return {}
-
-#     def delete_user(self, id):
-#         user = ClassAuth(self.username, self.password)
-#         url = f'https://lesson-pk.ru/permission/delete?user_id={id}'
-#         response = requests.delete(url, auth=BearerAuth(user.tokken()))
-#         self.dict_res = response.json()
-#         return self.dict_res
-
 
 # class ClassPath:
 #     def __init__(self, username, password):
@@ -206,10 +150,11 @@ def add_journal(diary: str, dates_id: int, users_id: int, username, password):
 
 
 if __name__ == "__main__":
-    # user_date("Admin", "1234")  # получить\обновить токен
+    # pprint(user_date("Andrew", "1234"))  # получить\обновить токен
     # pprint(add_user("Andrew", "1234"))
     # pprint(one_users('Admin', 'Admin', '1234'))
     # pprint(del_users("Andrew", "Admin", "1234"))
     # pprint(all_users("Admin", "1234"))
-    pprint(add_journal("test Admin", 1, 6, "Andrew", "1234"))
+    pprint(add_journal("test Andrew auto ++", "Andrew", "1234"))
+    # pprint(add_date("2024-11-20"))
     pass

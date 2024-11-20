@@ -45,6 +45,28 @@ async def user_detail(login: str, get_user: dict = Depends(get_current_user)):
         )
 
 
+@router.get("/id/{login}")
+async def user_id(login: str, get_user: dict = Depends(get_current_user)):
+    res = users_select_all()
+    res_login = [i["login"] for i in res]
+    if login not in res_login:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+    elif get_user.get:
+        res_user = users_select(login)[0]["id"]
+        return {
+            "status_code": status.HTTP_201_CREATED,
+            "transaction": res_user,
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are authorized to use this method",
+        )
+
+
 @router.delete("/delete/{login}")
 async def del_users(login: str, get_user: dict = Depends(get_current_user)):
     res = users_select_all()
