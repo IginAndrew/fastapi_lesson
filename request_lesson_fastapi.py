@@ -1,13 +1,15 @@
 import requests
-from requests_oauth2client  import BearerAuth
+from requests_oauth2client import BearerAuth
 from pprint import pprint
 
 
 def tokken(username, password):
-    post_params = {'username': username, 'password': password}
-    response = requests.post('http://127.0.0.1:8000/auth/token', data=post_params)
-    dict_res = response.json()['access_token']
+    post_params = {"username": username, "password": password}
+    response = requests.post("http://127.0.0.1:8000/auth/token", data=post_params)
+    dict_res = response.json()["access_token"]
     return dict_res
+
+
 def user_date(username, password):
     url = "http://127.0.0.1:8000/auth/read_current_user"
     response = requests.get(url, auth=BearerAuth(tokken(username, password)))
@@ -16,24 +18,38 @@ def user_date(username, password):
 
 
 def all_users(username, password):
-    res = requests.get("http://127.0.0.1:8000/users/all", auth=BearerAuth(tokken(username, password)))
+    res = requests.get(
+        "http://127.0.0.1:8000/users/all", auth=BearerAuth(tokken(username, password))
+    )
     dict_res = res.json()
     return dict_res
 
+
 def one_users(login, username, password):
-    res = requests.get(f"http://127.0.0.1:8000/users/detail/{login}", auth=BearerAuth(tokken(username, password)))
+    res = requests.get(
+        f"http://127.0.0.1:8000/users/detail/{login}",
+        auth=BearerAuth(tokken(username, password)),
+    )
     dict_res = res.json()
     return dict_res
+
 
 def add_user(login, psw):
     url = "http://127.0.0.1:8000/auth/"
-    post_params = {'login': login, 'psw': psw}
-    response = requests.post(url, json=post_params, )
+    post_params = {"login": login, "psw": psw}
+    response = requests.post(
+        url,
+        json=post_params,
+    )
     dict_res = response.json()
     return dict_res
 
+
 def del_users(login, username, password):
-    res = requests.delete(f"http://127.0.0.1:8000/users/delete/{login}", auth=BearerAuth(tokken(username, password)))
+    res = requests.delete(
+        f"http://127.0.0.1:8000/users/delete/{login}",
+        auth=BearerAuth(tokken(username, password)),
+    )
     dict_res = res.json()
     return dict_res
 
@@ -178,9 +194,9 @@ def del_users(login, username, password):
 
 
 if __name__ == "__main__":
-    # user_date('Admin', '1234')#получить\обновить токен
-    # pprint(add_user('login', 'psw'))
-    # pprint(all_users('Admin', '1234'))
+    # user_date("Admin", "1234")  # получить\обновить токен
+    # pprint(add_user("Admin", "1234"))
     # pprint(one_users('Admin', 'Admin', '1234'))
-    # pprint(del_users('login', 'Admin', '1234'))
+    pprint(del_users("Andrew", "Admin", "1234"))
+    pprint(all_users("Admin", "1234"))
     pass
