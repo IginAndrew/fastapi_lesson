@@ -1,6 +1,11 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 
-from db.db import journal_select_all, journals_insert
+from db.db import (
+    journal_select_all,
+    journals_insert,
+    users_select_all,
+    dates_select_all,
+)
 from routers.auth import get_current_user
 from schemas import CreateJournals
 
@@ -20,8 +25,18 @@ async def all_dates(get_user: dict = Depends(get_current_user)):
 
 
 @router.post("/create")
-async def create_journal(create_date: CreateJournals, get_user: dict = Depends(get_current_user)):
-    if get_user:
+async def create_journal(
+    create_date: CreateJournals, get_user: dict = Depends(get_current_user)
+):
+    res = users_select_all()
+    res_id = [i["id"] for i in res]
+    res_data = dates_select_all()
+    res_data_id = [i["id"] for i in res_data]
+    if (
+        get_user
+        and create_date.users_id in res_id
+        and create_date.dates_id in res_data_id
+    ):
         journals_insert(
             diary=create_date.diary,
             dates_id=create_date.dates_id,
@@ -29,7 +44,14 @@ async def create_journal(create_date: CreateJournals, get_user: dict = Depends(g
         )
         return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
     else:
+        detail = ""
+        if get_user == False:
+            detail += "You are not authorized to use this method"
+        elif create_date.users_id not in res_id:
+            detail += "User not found"
+        elif create_date.dates_id not in res_data_id:
+            detail += "Date not found"
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not authorized to use this method",
+            detail=detail,
         )

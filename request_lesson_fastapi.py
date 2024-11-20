@@ -53,6 +53,18 @@ def del_users(login, username, password):
     dict_res = res.json()
     return dict_res
 
+
+def add_journal(diary: str, dates_id: int, users_id: int, username, password):
+    auth = BearerAuth(tokken(username, password))
+    url = "http://127.0.0.1:8000/journals/create/"
+    post_params = {"diary": diary, "dates_id": dates_id, "users_id": users_id}
+    response = requests.post(
+        url,
+        json=post_params,
+        auth=auth,
+    )
+    dict_res = response.json()
+    return dict_res
     # def all_products(self):
     #     res = requests.get("https://lesson-pk.ru/products/")
     #     dict_res = res.json()
@@ -195,8 +207,9 @@ def del_users(login, username, password):
 
 if __name__ == "__main__":
     # user_date("Admin", "1234")  # получить\обновить токен
-    pprint(add_user("Andrew", "1234"))
+    # pprint(add_user("Andrew", "1234"))
     # pprint(one_users('Admin', 'Admin', '1234'))
     # pprint(del_users("Andrew", "Admin", "1234"))
-    pprint(all_users("Admin", "1234"))
+    # pprint(all_users("Admin", "1234"))
+    pprint(add_journal("test Admin", 1, 6, "Andrew", "1234"))
     pass

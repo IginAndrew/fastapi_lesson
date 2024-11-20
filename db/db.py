@@ -264,9 +264,7 @@ def users_del(login):
                   DELETE FROM Users
                   WHERE login = ?;
                   """,
-            (
-                login,
-            ),
+            (login,),
         )
         con.commit()
     except sqlite3.Error as error:
@@ -275,6 +273,7 @@ def users_del(login):
         if con:
             con.close()
             print("Соединение с sql закрыто")
+
 
 def journal_del_user(login):
     try:
@@ -286,9 +285,7 @@ def journal_del_user(login):
                   DELETE FROM Journals
                   WHERE users_id = (SELECT id FROM Users WHERE login = ?);
                   """,
-            (
-                login,
-            ),
+            (login,),
         )
         con.commit()
     except sqlite3.Error as error:
@@ -297,6 +294,30 @@ def journal_del_user(login):
         if con:
             con.close()
             print("Соединение с sql закрыто")
+
+
+def dates_select_all():
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        res = c.execute(
+            """
+        SELECT * FROM Dates
+        """
+        )
+        res = res.fetchall()
+        if not res:
+            print("No users")
+            return False
+        return res
+    except sqlite3.Error as error:
+        print("Error with SQLite in users_select_all", error)
+    finally:
+        if con:
+            con.close()
+            print("Connection closed")
+
 
 if __name__ == "__main__":
     users()
@@ -309,4 +330,4 @@ if __name__ == "__main__":
     # print(u[0]['psw'])
     # print([i for name in users_select_all() for i in name])
     # users_update("string", "Sveta", "1234")
-    users_del('string')
+    users_del("string")
