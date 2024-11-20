@@ -1,6 +1,12 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 
-from db.db import users_select_all, users_insert, users_select, users_del, journal_del_user
+from db.db import (
+    users_select_all,
+    users_insert,
+    users_select,
+    users_del,
+    journal_del_user,
+)
 from schemas import CreateUsers
 
 from routers.auth import get_current_user
@@ -37,6 +43,7 @@ async def user_detail(login: str, get_user: dict = Depends(get_current_user)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are authorized Admin only to use this method",
         )
+
 
 @router.delete("/delete/{login}")
 async def del_users(login: str, get_user: dict = Depends(get_current_user)):
