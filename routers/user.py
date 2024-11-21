@@ -17,7 +17,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/all")
 async def all_users(get_user: dict = Depends(get_current_user)):
-    if get_user.get("username") == "Admin":
+    if get_user.get:
         r = users_select_all()
         return {"status_code": status.HTTP_201_CREATED, "transaction": r}
     else:

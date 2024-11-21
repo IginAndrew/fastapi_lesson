@@ -59,14 +59,15 @@ def add_journal(diary: str, username, password):
     today = date.today()
     auth = BearerAuth(tokken(username, password))
     add_date(str(today))
-    id_user = user_date(username, password)["User"]["id"]
+    id_users = all_users(username, password)
+    id_user = [i["id"] for i in id_users["transaction"] if i["login"] == username]
     id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == str(today)]
     print(id_date)
     url = "http://127.0.0.1:8000/journals/create/"
     post_params = {
         "diary": diary,
         "dates_id": int(id_date[0]),
-        "users_id": int(id_user),
+        "users_id": int(id_user[0]),
     }
     response = requests.post(
         url,
@@ -113,7 +114,8 @@ def all_date():
 def one_journal(login: str, data: str, password):
     auth = BearerAuth(tokken(login, password))
     id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == data]
-    id_user = user_date(login, password)["User"]["id"]
+    id_users = all_users(login, password)
+    id_user = [i["id"] for i in id_users["transaction"] if i["login"] == login]
     if data in [i["date"] for i in all_date()["transaction"]]:
         res = requests.get(
             f"http://127.0.0.1:8000/journals/journal_one?users_id={int(id_user)}&dates_id={int(id_date[0])}",
@@ -125,43 +127,20 @@ def one_journal(login: str, data: str, password):
         return {}
 
 
-# def auto_add_date():
-#     today = date.today()
-#     if str(today) not in [i["date"] for i in all_date()["transaction"]]:
-#         add_date(str(today))
-
-
-# class ClassPut:
-#     def __init__(self, username, password):
-#         self.username = username
-#         self.password = password
-
-#     def put_categories(self, name, new_name):
-#         user = ClassAuth(self.username, self.password)
-#         get = ClassGet()
-#         dict_categories = (get.all_categories()['transaction'])
-#         for i, v in enumerate(dict_categories):
-#             if slugify(name) == v['slug']:
-#                 id = dict_categories[i]['id']
-#                 url = f'https://lesson-pk.ru/category/update_category?id={id}'
-#                 post_params = {'name': new_name}
-#                 response = requests.put(url, json=post_params, auth=BearerAuth(user.tokken()))
-#                 self.dict_res = response.json()
-#                 return self.dict_res
-#         return {}
-
-
-# class ClassPath:
-#     def __init__(self, username, password):
-#         self.username = username
-#         self.password = password
-
-#     def path_uswers(self, id):
-#         user = ClassAuth(self.username, self.password)
-#         url = f'https://lesson-pk.ru/permission/?user_id={id}'
-#         response = requests.patch(url, auth=BearerAuth(user.tokken()))
-#         self.dict_res = response.json()
-#         return self.dict_res
+def put_journal(diary: str, login: str, data: str, password):
+    auth = BearerAuth(tokken(login, password))
+    id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == data]
+    id_users = all_users(login, password)
+    id_user = [i["id"] for i in id_users["transaction"] if i["login"] == login]
+    post_params = {
+        "diary": diary,
+        "dates_id": int(id_date[0]),
+        "users_id": int(id_user[0]),
+    }
+    url = f"http://127.0.0.1:8000/journals/udate_one"
+    response = requests.put(url, json=post_params, auth=auth)
+    dict_res = response.json()
+    return dict_res
 
 
 if __name__ == "__main__":
@@ -173,4 +152,5 @@ if __name__ == "__main__":
     # pprint(add_journal("test Andrew auto 21", "Andrew", "1234"))
     # pprint(add_date("2024-11-20"))
     # pprint(one_journal("Andrew", "2024-11-21", "1234"))
+    pprint(put_journal("проверка обновления дневника", "Andrew", "2024-11-21", "1234"))
     pass
