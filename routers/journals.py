@@ -7,6 +7,8 @@ from db.db import (
     dates_select_all,
     journal_select_one,
     journal_update,
+    journal_del_user_data,
+    users_select_login,
 )
 from routers.auth import get_current_user
 from schemas import CreateJournals
@@ -89,4 +91,27 @@ async def update_one(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are authorized Admin only to use this method",
+        )
+
+
+@router.delete("/delete")
+async def del_journal_one(
+    users_id: int, dates_id: int, get_user: dict = Depends(get_current_user)
+):
+    res = users_select_all()
+    res_login = [i["id"] for i in res]
+    res_data = dates_select_all()
+    res_data_id = [i["id"] for i in res_data]
+    if users_id not in res_login or dates_id not in res_data_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+    elif get_user.get:
+        r = journal_del_user_data(users_id, dates_id)
+        return {"status_code": status.HTTP_201_CREATED, "transaction": r}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are authorized to use this method",
         )

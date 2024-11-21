@@ -183,6 +183,31 @@ def users_select(login):
             print("Connection closed")
 
 
+def users_select_login(id):
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        res = c.execute(
+            """
+        SELECT * FROM Users
+        WHERE id = ?;
+        """,
+            (id,),
+        )
+        res = res.fetchone()
+        if not res:
+            print("No users")
+            return False
+        return res
+    except sqlite3.Error as error:
+        print("Error with SQLite in users_select", error)
+    finally:
+        if con:
+            con.close()
+            print("Connection closed")
+
+
 def users_update(login, New_login):
     try:
         con = get_connection()
@@ -357,6 +382,30 @@ def journal_update(diary, dates_id, users_id):
                   WHERE dates_id = ? AND users_id = ?;
                   """,
             (diary, dates_id, users_id),
+        )
+        con.commit()
+    except sqlite3.Error as error:
+        print("Ошибка при работе sql", error)
+    finally:
+        if con:
+            con.close()
+            print("Соединение с sql закрыто")
+
+
+def journal_del_user_data(users_id, dates_id):
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        c.execute(
+            """
+                  DELETE FROM Journals
+                  WHERE users_id = ? AND dates_id = ?;
+                  """,
+            (
+                users_id,
+                dates_id,
+            ),
         )
         con.commit()
     except sqlite3.Error as error:

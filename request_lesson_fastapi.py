@@ -118,7 +118,7 @@ def one_journal(login: str, data: str, password):
     id_user = [i["id"] for i in id_users["transaction"] if i["login"] == login]
     if data in [i["date"] for i in all_date()["transaction"]]:
         res = requests.get(
-            f"http://127.0.0.1:8000/journals/journal_one?users_id={int(id_user)}&dates_id={int(id_date[0])}",
+            f"http://127.0.0.1:8000/journals/journal_one?users_id={int(id_user[0])}&dates_id={int(id_date[0])}",
             auth=auth,
         )
         dict_res = res.json()
@@ -128,19 +128,36 @@ def one_journal(login: str, data: str, password):
 
 
 def put_journal(diary: str, login: str, data: str, password):
-    auth = BearerAuth(tokken(login, password))
-    id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == data]
-    id_users = all_users(login, password)
-    id_user = [i["id"] for i in id_users["transaction"] if i["login"] == login]
-    post_params = {
-        "diary": diary,
-        "dates_id": int(id_date[0]),
-        "users_id": int(id_user[0]),
-    }
-    url = f"http://127.0.0.1:8000/journals/udate_one"
-    response = requests.put(url, json=post_params, auth=auth)
-    dict_res = response.json()
-    return dict_res
+    try:
+        auth = BearerAuth(tokken(login, password))
+        id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == data]
+        id_users = all_users(login, password)
+        id_user = [i["id"] for i in id_users["transaction"] if i["login"] == login]
+        post_params = {
+            "diary": diary,
+            "dates_id": int(id_date[0]),
+            "users_id": int(id_user[0]),
+        }
+        url = f"http://127.0.0.1:8000/journals/udate_one"
+        response = requests.put(url, json=post_params, auth=auth)
+        dict_res = response.json()
+        return dict_res
+    except:
+        return {}
+
+
+def del_journal_one(data, login, password):
+    try:
+        auth = BearerAuth(tokken(login, password))
+        id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == data]
+        id_users = all_users(login, password)
+        id_user = [i["id"] for i in id_users["transaction"] if i["login"] == login]
+        url = f"http://127.0.0.1:8000/journals/delete?users_id={int(id_user[0])}&dates_id={int(id_date[0])}"
+        res = requests.delete(url, auth=auth)
+        dict_res = res.json()
+        return dict_res
+    except:
+        return {}
 
 
 if __name__ == "__main__":
@@ -152,5 +169,6 @@ if __name__ == "__main__":
     # pprint(add_journal("test Andrew auto 21", "Andrew", "1234"))
     # pprint(add_date("2024-11-20"))
     # pprint(one_journal("Andrew", "2024-11-21", "1234"))
-    pprint(put_journal("проверка обновления дневника", "Andrew", "2024-11-21", "1234"))
+    # pprint(put_journal("проверка обновления дневника", "Andrew", "2024-11-21", "1234"))
+    pprint(del_journal_one("2024-11-21", "Andrew", "1234"))
     pass
