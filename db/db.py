@@ -318,6 +318,34 @@ def dates_select_all():
             print("Connection closed")
 
 
+def journal_select_one(users_id, dates_id):
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        res = c.execute(
+            """
+        SELECT * FROM Journals
+        WHERE users_id = ? AND dates_id = ?;
+        """,
+            (
+                users_id,
+                dates_id,
+            ),
+        )
+        res = res.fetchone()
+        if not res:
+            print("No journals")
+            return False
+        return res
+    except sqlite3.Error as error:
+        print("Error with SQLite in journal_select_one", error)
+    finally:
+        if con:
+            con.close()
+            print("Connection closed")
+
+
 if __name__ == "__main__":
     users()
     dates()

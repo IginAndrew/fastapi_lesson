@@ -110,6 +110,21 @@ def all_date():
     return dict_res
 
 
+def one_journal(login: str, data: str, password):
+    auth = BearerAuth(tokken(login, password))
+    id_date = [i["id"] for i in all_date()["transaction"] if i["date"] == data]
+    id_user = user_date(login, password)["User"]["id"]
+    if data in [i["date"] for i in all_date()["transaction"]]:
+        res = requests.get(
+            f"http://127.0.0.1:8000/journals/journal_one?users_id={int(id_user)}&dates_id={int(id_date[0])}",
+            auth=auth,
+        )
+        dict_res = res.json()
+        return dict_res
+    else:
+        return {}
+
+
 # def auto_add_date():
 #     today = date.today()
 #     if str(today) not in [i["date"] for i in all_date()["transaction"]]:
@@ -155,6 +170,7 @@ if __name__ == "__main__":
     # pprint(one_users('Admin', 'Admin', '1234'))
     # pprint(del_users("Andrew", "Admin", "1234"))
     # pprint(all_users("Admin", "1234"))
-    pprint(add_journal("test Andrew auto ++", "Andrew", "1234"))
+    # pprint(add_journal("test Andrew auto 21", "Andrew", "1234"))
     # pprint(add_date("2024-11-20"))
+    # pprint(one_journal("Andrew", "2024-11-21", "1234"))
     pass
