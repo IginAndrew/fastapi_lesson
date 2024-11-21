@@ -346,6 +346,27 @@ def journal_select_one(users_id, dates_id):
             print("Connection closed")
 
 
+def journal_update(diary, dates_id, users_id):
+    try:
+        con = get_connection()
+        with con:
+            c = con.cursor()
+        c.execute(
+            """
+                  UPDATE Journals SET diary = ?
+                  WHERE dates_id = ? AND users_id = ?;
+                  """,
+            (diary, dates_id, users_id),
+        )
+        con.commit()
+    except sqlite3.Error as error:
+        print("Ошибка при работе sql", error)
+    finally:
+        if con:
+            con.close()
+            print("Соединение с sql закрыто")
+
+
 if __name__ == "__main__":
     users()
     dates()

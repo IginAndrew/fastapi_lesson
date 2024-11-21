@@ -6,6 +6,7 @@ from db.db import (
     users_select_all,
     dates_select_all,
     journal_select_one,
+    journal_update,
 )
 from routers.auth import get_current_user
 from schemas import CreateJournals
@@ -72,4 +73,20 @@ async def journal_one(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are authorized to use this method",
+        )
+
+
+@router.put("/udate_one")
+async def update_one(
+    put_journals: CreateJournals, get_user: dict = Depends(get_current_user)
+):
+    if get_user.get:
+        r = journal_update(
+            put_journals.diary, put_journals.dates_id, put_journals.users_id
+        )
+        return {"status_code": status.HTTP_201_CREATED, "transaction": r}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are authorized Admin only to use this method",
         )
