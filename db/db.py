@@ -183,19 +183,18 @@ def users_select(login):
             print("Connection closed")
 
 
-def users_update(login, New_login, psw):
+def users_update(login, New_login):
     try:
         con = get_connection()
         with con:
             c = con.cursor()
         c.execute(
             """
-                  UPDATE Users SET login = ?, psw = ?
+                  UPDATE Users SET login = ?
                   WHERE login = ?;
                   """,
             (
                 New_login,
-                psw,
                 login,
             ),
         )

@@ -6,6 +6,7 @@ from db.db import (
     users_select,
     users_del,
     journal_del_user,
+    users_update,
 )
 from schemas import CreateUsers
 
@@ -79,6 +80,27 @@ async def del_users(login: str, get_user: dict = Depends(get_current_user)):
     elif get_user.get("username") == "Admin":
         journal_del_user(login)
         r = users_del(login)
+        return {"status_code": status.HTTP_201_CREATED, "transaction": r}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are authorized Admin only to use this method",
+        )
+
+
+@router.put("/udate/{login}")
+async def update_users(
+    login: str, new_login: str, get_user: dict = Depends(get_current_user)
+):
+    res = users_select_all()
+    res_login = [i["login"] for i in res]
+    if login not in res_login:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+    elif get_user.get("username") == "Admin":
+        r = users_update(login, new_login)
         return {"status_code": status.HTTP_201_CREATED, "transaction": r}
     else:
         raise HTTPException(
