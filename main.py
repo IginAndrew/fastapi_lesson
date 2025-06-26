@@ -5,7 +5,12 @@ from loguru import logger
 from uuid import uuid4
 from fastapi.responses import JSONResponse
 
-logger.add("info.log", format="Log: [{extra[log_id]}:{time} - {level} - {message} ", level="INFO", enqueue = True)
+logger.add(
+    "info.log",
+    format="Log: [{extra[log_id]}:{time} - {level} - {message} ",
+    level="INFO",
+    enqueue=True,
+)
 
 app = FastAPI()
 
@@ -19,7 +24,7 @@ async def log_middleware(request: Request, call_next):
             if response.status_code in [401, 402, 403, 404]:
                 logger.warning(f"Request to {request.url.path} failed")
             else:
-                logger.info('Successfully accessed ' + request.url.path)
+                logger.info("Successfully accessed " + request.url.path)
         except Exception as ex:
             logger.error(f"Request to {request.url.path} failed: {ex}")
             response = JSONResponse(content={"success": False}, status_code=500)
