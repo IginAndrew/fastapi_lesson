@@ -37,3 +37,4 @@ app.include_router(journals.router)
 app.include_router(auth.router)
 
 """uvicorn main:app --reload"""
+"""http://127.0.0.1:8000/docs"""
